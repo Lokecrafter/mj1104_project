@@ -1,8 +1,6 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
-#include<Encoder.h>
-
 class Motor{
     private:
         int pinA;

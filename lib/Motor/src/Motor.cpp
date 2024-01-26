@@ -17,8 +17,6 @@ void Motor::driveVelocity(float velocity){
     //bool pwmSpeed = clampedVelocity != 0;
     int pwmSpeed = round(clampedVelocity * 255);
     
-    Serial.print(pwmSpeed);
-
     //Turn forward
     if (velocity >= 0){
         analogWrite(pinA, pwmSpeed);
