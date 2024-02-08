@@ -5,36 +5,36 @@
 Motor motorRight(6,5);
 Motor motorLeft(10,11);
 
+bool isDrivingRight = false;
+int sensorLeft = 3;
+int sensorRight = 4;
+
 void setup() {
 	Serial.begin(9600);
 	motorLeft.driveVelocity(-1);
 
 	pinMode(A0, INPUT);
 	pinMode(LED_BUILTIN, OUTPUT);
+	pinMode(sensorLeft, INPUT);
+	pinMode(sensorRight, INPUT);
 }
 
 void loop() {
-	motorLeft.driveVelocity(1);
-	//motorRight.driveVelocity(1);
-	Serial.println("Full speed");
+	if(isDrivingRight){
+		motorLeft.driveVelocity(1);
+		motorRight.stop();
+	}
+	else{
+		motorRight.driveVelocity(1);
+		motorLeft.stop();
+	}
 
-	digitalWrite(LED_BUILTIN, HIGH);
-	delay(1000);
-	motorLeft.stop();
-	motorRight.stop();
-
-	digitalWrite(LED_BUILTIN, LOW);
-	delay(1000);
-	//motorLeft.driveVelocity(-0.75);
-	motorRight.driveVelocity(1);
-	
-	digitalWrite(LED_BUILTIN, HIGH);
-	delay(1000);
-	motorLeft.stop();
-	motorRight.stop();
-	
-	digitalWrite(LED_BUILTIN, LOW);
-	delay(1000);
+	if(digitalRead(sensorLeft)){
+		isDrivingRight = false;
+	}
+	else if(digitalRead(sensorRight)){
+		isDrivingRight = true;
+	}
 }
 
 
