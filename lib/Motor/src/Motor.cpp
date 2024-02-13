@@ -29,6 +29,22 @@ void Motor::driveVelocity(float velocity){
     }
 }
 
+void Motor::driveFullVelocity(float velocity){
+    float clampedVelocity = abs(max(-1.0, min(velocity, 1.0))); //Clamp velocity to between -1 and 1 and take absolute value
+    bool pwmSpeed = clampedVelocity != 0;
+    
+    //Turn forward
+    if (velocity >= 0){
+        digitalWrite(pinA, pwmSpeed);
+        digitalWrite(pinB, 0);
+    }
+    //Turn backward
+    else{
+        digitalWrite(pinA, 0);
+        digitalWrite(pinB, pwmSpeed);
+    }
+}
+
 void Motor::stop(){
     digitalWrite(pinA, LOW);
     digitalWrite(pinB, LOW);

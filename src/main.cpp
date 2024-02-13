@@ -11,12 +11,14 @@ int sensorRight = 4;
 
 void setup() {
 	Serial.begin(9600);
-	motorLeft.driveVelocity(-1);
 
-	pinMode(A0, INPUT);
-	pinMode(LED_BUILTIN, OUTPUT);
 	pinMode(sensorLeft, INPUT);
 	pinMode(sensorRight, INPUT);
+
+
+
+	motorLeft.driveFullVelocity(1);
+	delay(10000);
 }
 
 void loop() {

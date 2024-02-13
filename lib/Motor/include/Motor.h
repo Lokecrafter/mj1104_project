@@ -9,6 +9,7 @@ class Motor{
         Motor(int pinA, int pinB);
         void begin();
         void driveVelocity(float velocity);
+        void driveFullVelocity(float velocity);
         void stop();
 };
 #endif
