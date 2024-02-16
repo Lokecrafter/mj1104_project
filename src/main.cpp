@@ -18,7 +18,7 @@ void setup() {
 
 
 	motorLeft.driveFullVelocity(1);
-	delay(10000);
+	//delay(10000);
 }
 
 void loop() {
@@ -31,12 +31,19 @@ void loop() {
 		motorLeft.stop();
 	}
 
-	if(digitalRead(sensorLeft)){
+	if(!digitalRead(sensorLeft)){
 		isDrivingRight = false;
 	}
-	else if(digitalRead(sensorRight)){
+	else if(!digitalRead(sensorRight)){
 		isDrivingRight = true;
 	}
+
+	Serial.print("Sensor Left: ");
+	Serial.print(digitalRead(sensorLeft));
+	Serial.print("   Sensor right: ");
+	Serial.print(digitalRead(sensorRight));
+	Serial.print("   Driving right: ");
+	Serial.println(isDrivingRight);
 }
 
 
