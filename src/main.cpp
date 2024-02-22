@@ -21,6 +21,7 @@ const float kd = 0;
 //Integration constants
 const float errorSumMultiplier = 1;
 const float errorDecayConstant = 0.5;
+const float maxErrorSum = 1;
 
 //Global variables for time, integral and derivative
 float sumError = 0;
@@ -68,6 +69,8 @@ void loop() {
 
 	//Integrate error and add an errordecay by numeric differential equation
 	sumError += error * errorSumMultiplier * deltaTime;
+	sumError = min(max(sumError, -maxErrorSum), maxErrorSum); //Clamp error sum
+
 	float firstSumErrorDerivative = sumError * errorDecayConstant; 
 	sumError -= firstSumErrorDerivative * deltaTime;
 
