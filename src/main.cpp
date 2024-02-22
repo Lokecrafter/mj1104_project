@@ -1,13 +1,32 @@
 #include <Arduino.h>
 #include <Motor.h>
 
-
+//Motors
 Motor motorRight(6,5);
 Motor motorLeft(10,11);
 
-bool isDrivingRight = false;
+//Sensor pins
 int sensorLeft = 3;
 int sensorRight = 4;
+
+//Robot variables
+const float velocityForward = 1;
+const float maxXDrive = 1;
+
+//PID constants
+const float kp = 1;
+const float ki = 1;
+const float kd = 0;
+
+//Integration constants
+const float errorSumMultiplier = 1;
+const float errorDecayConstant = 0.5;
+
+//Global variables for time, integral and derivative
+float sumError = 0;
+unsigned long lastMicros = 0;
+float lastError = 0;
+
 
 void setup() {
 	Serial.begin(9600);
@@ -15,40 +34,42 @@ void setup() {
 	pinMode(sensorLeft, INPUT);
 	pinMode(sensorRight, INPUT);
 
+	lastMicros = micros();
+}
+
+void driveRobot(float x, float y){
+	x = min(max(x, -maxXDrive), maxXDrive); //Clamp x-value
+
+	float leftDrive = y + x;
+	float rightDrive = y - x;
+
+	motorLeft.driveVelocity(leftDrive);
+	motorRight.driveVelocity(rightDrive);
 }
 
 void loop() {
-	if(isDrivingRight){
-		motorLeft.driveVelocity(1);
-		motorRight.stop();
-	}
-	else{
-		motorRight.driveVelocity(1);
-		motorLeft.stop();
-	}
+	float deltaTime = (micros() - lastMicros) / (float)1000000;
+	lastMicros = micros();
 
+	//Calculate error. Error is 0 if no sensor is seeing the line
+	float error = 0;
 	if(!digitalRead(sensorLeft)){
-		isDrivingRight = false;
+		error = -1;
 	}
 	else if(!digitalRead(sensorRight)){
-		isDrivingRight = true;
+		error = 1;
 	}
 
-	Serial.print("Sensor Left: ");
-	Serial.print(digitalRead(sensorLeft));
-	Serial.print("   Sensor right: ");
-	Serial.print(digitalRead(sensorRight));
-	Serial.print("   Driving right: ");
-	Serial.println(isDrivingRight);
+	//Calculate "Turn factor" with PID controller
+	float deltaError = (error - lastError) / deltaTime;
+	float xDrive = kp * error + ki * sumError + kd * deltaError;	//PID controller
+
+	driveRobot(xDrive, velocityForward);
+
+	//Integrate error and add an errordecay by numeric differential equation
+	sumError += error * errorSumMultiplier * deltaTime;
+	float firstSumErrorDerivative = sumError * errorDecayConstant; 
+	sumError -= firstSumErrorDerivative * deltaTime;
+
+	lastError = error;
 }
-
-
-
-
-/*
-Teorier
-
-Kanske kan funka att köra långsamt men håller i ungefär 3-5 sekunder efter datorn har laddat upp kondensatorerna.
-
-
-*/
