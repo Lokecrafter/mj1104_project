@@ -15,10 +15,6 @@ void setup() {
 	pinMode(sensorLeft, INPUT);
 	pinMode(sensorRight, INPUT);
 
-
-
-	motorLeft.driveFullVelocity(1);
-	//delay(10000);
 }
 
 void loop() {
