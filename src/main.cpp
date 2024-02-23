@@ -53,13 +53,7 @@ void loop() {
 	lastMicros = micros();
 
 	//Calculate error. Error is 0 if no sensor is seeing the line
-	float error = 0;
-	if(!digitalRead(sensorLeft)){
-		error = -1;
-	}
-	else if(!digitalRead(sensorRight)){
-		error = 1;
-	}
+	float error = (!digitalRead(sensorRight)) - (!digitalRead(sensorLeft));
 
 	//Calculate "Turn factor" with PID controller
 	float deltaError = (error - lastError) / deltaTime;
