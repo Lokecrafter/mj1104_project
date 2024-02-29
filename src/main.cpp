@@ -19,8 +19,8 @@ const float ki = 0.5;
 const float kd = 0;
 
 //Integration constants
-const float errorSumMultiplier = 50;
-const float errorDecayConstant = 6;
+const float errorSumMultiplier = 100;
+const float errorDecayConstant = 5;
 const float maxErrorSum = 1;
 
 //Global variables for time, integral and derivative
