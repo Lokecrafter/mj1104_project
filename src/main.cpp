@@ -6,8 +6,11 @@ Motor motorRight(6,5);
 Motor motorLeft(10,11);
 
 bool isDrivingRight = false;
+bool driveWithMemory = false;
 int sensorLeft = 3;
 int sensorRight = 4;
+
+float speed = 1;
 
 void setup() {
 	Serial.begin(9600);
@@ -18,21 +21,34 @@ void setup() {
 }
 
 void loop() {
-	if(isDrivingRight){
-		motorLeft.driveVelocity(1);
-		motorRight.stop();
-	}
-	else{
-		motorRight.driveVelocity(1);
-		motorLeft.stop();
-	}
-
 	if(!digitalRead(sensorLeft)){
 		isDrivingRight = false;
+		driveWithMemory = false;
+		motorRight.driveVelocity(speed);
+		motorLeft.driveVelocity(-speed/3);
 	}
 	else if(!digitalRead(sensorRight)){
 		isDrivingRight = true;
+		driveWithMemory = false;
+		motorLeft.driveVelocity(speed);
+		motorRight.driveVelocity(-speed/3);
 	}
+	else{
+		driveWithMemory = true;
+	}
+
+	if(driveWithMemory){
+
+		if(isDrivingRight){
+			motorLeft.driveVelocity(speed);
+			motorRight.stop();
+		}
+		else{
+			motorRight.driveVelocity(speed);
+			motorLeft.stop();
+		}
+	}
+
 
 	Serial.print("Sensor Left: ");
 	Serial.print(digitalRead(sensorLeft));
