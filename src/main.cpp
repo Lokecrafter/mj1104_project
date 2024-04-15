@@ -12,12 +12,16 @@ int sensorRight = 4;
 
 float speed = 1;
 
+int chargeTimeSeconds = 20;
+
 void setup() {
 	Serial.begin(9600);
 
 	pinMode(sensorLeft, INPUT);
 	pinMode(sensorRight, INPUT);
 
+
+	delay(chargeTimeSeconds * 1000);
 }
 
 void loop() {
