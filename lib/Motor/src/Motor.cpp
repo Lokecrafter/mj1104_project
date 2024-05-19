@@ -12,10 +12,10 @@ void Motor::begin(){
     pinMode(pinB, OUTPUT);
 }
 
+//Drive motor with PWM. Velocity can be between -1 and 1.
 void Motor::driveVelocity(float velocity){
-    float clampedVelocity = abs(max(-1.0, min(velocity, 1.0))); //Clamp velocity to between -1 and 1 and take absolute value
-    //bool pwmSpeed = clampedVelocity != 0;
-    int pwmSpeed = round(clampedVelocity * 255);
+    float clampedSpeed = min(1, abs(velocity)); //Take abolute value of velocity and clamp between 0 and 1.
+    int pwmSpeed = round(clampedSpeed * 255);
     
     //Turn forward
     if (velocity >= 0){
@@ -29,21 +29,23 @@ void Motor::driveVelocity(float velocity){
     }
 }
 
+//Drive motor full speed. Velocity can be either -1, 0 or 1.
 void Motor::driveFullVelocity(float velocity){
-    bool pwmSpeed = velocity != 0;
+    bool speed = velocity != 0; //
     
     //Turn forward
     if (velocity >= 0){
-        digitalWrite(pinA, pwmSpeed);
+        digitalWrite(pinA, speed);
         digitalWrite(pinB, 0);
     }
     //Turn backward
     else{
         digitalWrite(pinA, 0);
-        digitalWrite(pinB, pwmSpeed);
+        digitalWrite(pinB, speed);
     }
 }
 
+//Stop motor fully
 void Motor::stop(){
     digitalWrite(pinA, LOW);
     digitalWrite(pinB, LOW);
