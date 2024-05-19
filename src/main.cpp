@@ -30,56 +30,46 @@ float lastError = 0;
 
 
 void setup() {
-	Serial.begin(9600);
-
 	pinMode(sensorLeft, INPUT);
 	pinMode(sensorRight, INPUT);
 
 	lastMicros = micros();
 }
 
+//Steer differential drive robot with "joystick input"
 void driveRobot(float x, float y){
 	x = min(max(x, -maxXDrive), maxXDrive); //Clamp x-value
 
 	float leftDrive = y + x;
 	float rightDrive = y - x;
 
-	Serial.print("   left: ");
-	Serial.print(leftDrive);
-	Serial.print("   right: ");
-	Serial.println(rightDrive);
-
 	motorLeft.driveVelocity(leftDrive);
 	motorRight.driveVelocity(rightDrive);
 }
 
 void loop() {
-
 	float deltaTime = (micros() - lastMicros) / (float)1000000;
 	lastMicros = micros();
 
 	//Calculate error. Error is 0 if no sensor is seeing the line
 	float error = (!digitalRead(sensorRight)) - (!digitalRead(sensorLeft));
 
-	//Calculate "Turn factor" with PID controller
+	//Take numerical derivative of error
 	float deltaError = (error - lastError) / deltaTime;
-	float xDrive = kp * error + ki * sumError + kd * deltaError;	//PID controller
-	Serial.print("sumError: ");
-	Serial.print(sumError);
-	Serial.print("   xDrive: ");
-	Serial.print(xDrive);
 
+	//Calculate xDrive or a "turn factor" with PID controller
+	float xDrive = kp * error + ki * sumError + kd * deltaError;	//PID controller
 	driveRobot(xDrive, velocityForward);
 
-	//Integrate error and add an errordecay by numeric differential equation
-	float firstSumErrorDerivative = sumError * errorDecayConstant; 
-	sumError -= firstSumErrorDerivative * deltaTime;
+	//Add an error decay by numeric differential equation
+	float errorDecayAmount = sumError * errorDecayConstant; 
+	sumError -= errorDecayAmount * deltaTime;
 
-
+	//Integrate error
 	sumError += error * errorSumMultiplier * deltaTime;
-	sumError = min(max(sumError, -maxErrorSum), maxErrorSum); //Clamp error sum
 
-	
+	//Clamp error sum
+	sumError = min(max(sumError, -maxErrorSum), maxErrorSum); 
 
 	lastError = error;
 }
